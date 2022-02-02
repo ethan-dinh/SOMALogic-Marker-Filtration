@@ -1,1 +1,1 @@
-# Knight-Campus
+# SOMALogic Custom Panel Algorithm
