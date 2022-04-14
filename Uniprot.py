@@ -31,7 +31,6 @@ s = Service(chromedriver)
 driver = webdriver.Chrome(service=s, options=option)
 
 def scrape(name) -> List:
-    
     search_area = driver.find_element(By.ID, "query")
     search_area.clear()
     search_area.send_keys(name)
@@ -40,6 +39,7 @@ def scrape(name) -> List:
     for i in range(1,5):
         entry = driver.find_element(By.XPATH, f"//table/tbody/tr[{i}]/td[3]").text
         if "HUMAN" in entry:
+            print(driver.find_element(By.XPATH, f"//table/tbody/tr[{i}]/td[2]").text)
             return driver.find_element(By.XPATH, f"//table/tbody/tr[{i}]/td[2]").text
 
 # Main Function --------------------------------
@@ -51,11 +51,13 @@ def main():
     
     rows = []
     for name in gene_names:
-        rows.append([scrape(name)])
-        print(rows)
-
-    with open("Uniprot IDs") as outFile:
-        write = csv.writer(outFile, delimiter=",")
+        try:
+            rows.append([scrape(name)])
+        except:
+            continue
+    
+    with open("UniprotIDs.csv", 'w') as outFile:
+        write = csv.writer(outFile)
         write.writerows(rows)
 
 if __name__ == "__main__":
