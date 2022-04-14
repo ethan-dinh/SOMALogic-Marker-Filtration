@@ -21,7 +21,7 @@ def import_csv(filename) -> List:
 def pandas(uniprot):
     df = pd.read_csv("data.csv")
     custom_count = df[['UniProt ID', 'Count for Custom Panel']]
-    custom_count = custom_count[~custom_count["Count for Custom Panel"].isnull()]
+    custom_count = custom_count[~custom_count["Count for Custom Painel"].isnull()]
     
     list_all = df['UniProt ID'].tolist()
     list_custom = custom_count["UniProt ID"].tolist()
