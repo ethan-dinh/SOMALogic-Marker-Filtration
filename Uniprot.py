@@ -21,7 +21,7 @@ def import_csv(filename):
 
     return genes   
 
-# Configuring selenium
+# Configuring Selenium
 chromedriver = "/Users/ethandinh/Desktop/Personal/Automated Scripts/chromedriver"
 option = webdriver.ChromeOptions()
 option.binary_location = '/Applications/Brave Browser.app/Contents/MacOS/Brave Browser'
