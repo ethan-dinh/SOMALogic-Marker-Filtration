@@ -5,6 +5,7 @@ Generating a list of UNIPROT IDs from GENOME NAMES
 # Importing Libraries
 import os
 import csv
+from tqdm import tqdm 
 from typing import List
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
@@ -39,8 +40,7 @@ def scrape(name) -> List:
 
     for i in range(1,5):
         entry = driver.find_element(By.XPATH, f"//table/tbody/tr[{i}]/td[3]").text
-        if "HUMAN" in entry:
-            print(driver.find_element(By.XPATH, f"//table/tbody/tr[{i}]/td[2]").text)
+        if "HUMAN" in entry:            
             return driver.find_element(By.XPATH, f"//table/tbody/tr[{i}]/td[2]").text
 
 def nameChecker(name):
@@ -74,12 +74,13 @@ def create_IDList():
     driver.get("https://www.uniprot.org/")
 
     rows = []
-    for name in gene_names:
+    for i in tqdm(range(len(gene_names))):
         try:
-            rows.append([scrape(name)])
+            rows.append([scrape(gene_names[i])])
         except:
             continue
 
+    print("Conversion Completed!")
     with open("UniprotIDs.csv", 'w') as outFile:
         write = csv.writer(outFile)
         write.writerows(rows)
