@@ -1,0 +1,48 @@
+---
+title: "FTIR Visualization"
+author: "Ethan Dinh"
+date: '2022-04-14'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, include=FALSE}
+library(dplyr)
+library(readr)
+library(ggplot2)
+library(data.table)
+library(grid)
+library(cowplot)
+library(compute.es)
+library(ChemoSpec)
+```
+
+```{r}
+# PCL_NaOH_1_1 <- read_csv("~/Desktop/Knight Campus/FTIR Data (PCL)/PCL_NaOH_1_1.CSV")
+# PCL_NaOH_PDA_1_1 <- read_csv("~/Desktop/Knight Campus/FTIR Data (PCL)/PCL_NaOH_PDA_1_1.CSV")
+
+# PCL_NaOH_1_1 <- filter(PCL_NaOH_1_1, PCL_NaOH_1_1[2] > 0)
+# PCL_NaOH_PDA_1_1 <- filter(PCL_NaOH_PDA_1_1, PCL_NaOH_PDA_1_1[2] > 0)
+
+ssp <- files2SpectraObject(
+  gr.crit = c("PCL", "PDA"),
+  gr.cols = c("darkolivegreen4", "darkorange1"),
+  freq.unit = "Wavenumber (cm-1)",
+  int.unit = "%",
+  fileExt = "\\.(csv|CSV)$",
+  sep = ",",
+  debug = TRUE
+)
+
+sumSpectra(ssp)
+```
+
+```{r}
+myt <- expression(bold(FTIR~Comparison))
+p <- plotSpectra(ssp, which = c(1,3), offset = 130, lab.pos = 2000)
+p <- p + ggtitle(myt) + coord_cartesian(xlim = c(700, 3100))
+p # when using ggplot2, you have to "call" the object containing the plot
+```

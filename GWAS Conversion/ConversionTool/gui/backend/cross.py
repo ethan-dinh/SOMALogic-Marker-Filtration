@@ -21,35 +21,35 @@ def import_csv(filename) -> List:
 def pandas(uniprot):
     df = pd.read_csv("data.csv")
     custom_count = df[['UniProt ID', 'Count for Custom Panel']]
-    custom_count = custom_count[~custom_count["Count for Custom Panel"].isnull()]
+    custom_count = custom_count[~custom_count["Count for Custom Painel"].isnull()]
     
     list_all = df['UniProt ID'].tolist()
     list_custom = custom_count["UniProt ID"].tolist()
-    output_all = [] # 
-    not_in = [] # List of IDs that were converted but not in the custom count
+    output_custom = []
+    output_all = []
+    not_in = []
 
-    # Produces a list of all the UNIPROT IDs that overlap between the SOMA panel and the converted list
+    for ID in uniprot:
+        if ID not in list_custom:
+            output_custom.append(ID)
+
     for ID in uniprot:
         if ID in list_all:
             output_all.append(ID)
 
-    # The list of converted IDs that are not in the custom panel but in the SOMA panel
-    for ID in uniprot:
+    for ID in output_all:
         if ID not in list_custom:
-            if ID in output_all: 
-                not_in.append(ID)
+            not_in.append(ID)
     
+    print(len(output_custom))
+    print(len(output_all))
     print(len(not_in))
-
-    return not_in 
+    print(len(list_all))
+    print(len(uniprot))
 
 def main():
-    uniprot = import_csv("OST_IDs.csv") 
-    not_in = pandas(uniprot)
-    with open("not_in_OST.csv", "w") as output_file:
-        write = csv.writer(output_file)
-        for item in not_in:
-            write.writerow([item])
+    uniprot = import_csv("UniprotIDs.csv") 
+    pandas(uniprot)
 
 if __name__ == "__main__":
     main()

@@ -1,0 +1,115 @@
+---
+title: "FTIR Visualization"
+author: "Ethan Dinh"
+date: '2022-04-14'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, include=FALSE}
+library(dplyr)
+library(readr)
+library(ggplot2)
+library(data.table)
+library(grid)
+library(cowplot)
+library(compute.es)
+library(ChemoSpec)
+```
+
+```{r}
+PCL_NaOH_1_1 <- read_csv("~/Desktop/Knight Campus/FTIR Data (PCL)/PCL_NaOH_1_1.CSV")
+PCL_NaOH_PDA_1_1 <- read_csv("~/Desktop/Knight Campus/FTIR Data (PCL)/PCL_NaOH_PDA_1_1.CSV")
+
+PCL_NaOH_1_1 <- filter(PCL_NaOH_1_1, PCL_NaOH_1_1[2] > 0)
+PCL_NaOH_PDA_1_1 <- filter(PCL_NaOH_PDA_1_1, PCL_NaOH_PDA_1_1[2] > 0)
+
+ssp <- files2SpectraObject(
+  gr.crit = c("PCL_NaOH", "PCL_NaOH_PDA"),
+  gr.cols = c("red", "blue"),
+)
+```
+
+```{r}
+p <- plotSpectra()
+```
+
+```{r}
+Relative_Vol <- read_csv("Summer_2019/Isadora's Data .csv")
+Relative_Vol_2 <- read_csv("Summer_2019/DATA_Isadora.csv")
+
+DMSO1 <- Relative_Vol %>%
+    select(rel_vol, Type) %>%
+    filter(Type == "DMSO")
+
+DAPT1 <- Relative_Vol %>%
+    select(rel_vol, Type) %>%
+    filter(Type == "DAPT")
+
+DMSO_100 <- Relative_Vol_2 %>%
+    select(rel_vol, Type) %>%
+    filter(Type == "DMSO")
+
+DAPT_50 <- Relative_Vol_2 %>%
+    select(rel_vol, Type) %>%
+    filter(Type == "DAPT")
+
+DAPT <- DAPT1$rel_vol %>%
+        na.omit(DAPT1)
+DMSO <- DMSO1$rel_vol%>%
+        na.omit(DMSO1)
+
+DAPT_T <- DAPT_50$rel_vol %>%
+        na.omit(DAPT_50)
+DMSO_T <- DMSO_100$rel_vol %>%
+        na.omit(DAPT_50)
+```
+
+```{r, Filtration}
+Relative_GFP_Comparison <- Relative_Vol %>%
+    select(Component, rel_vol, Type) %>%
+    filter(Component == "GFP")
+```
+
+```{r, relative GFP Comparison}
+Relative_GFP_Comparison$Component <- factor(Relative_GFP_Comparison$Component,levels = c("GFP"))
+Relative_GFP_Comparison$Group <- factor(Relative_GFP_Comparison$Type,levels = c("DAPT", "DMSO"))
+
+Relative_GFP_Comparison.box <- ggplot(data=Relative_GFP_Comparison, aes(x=Type,y=rel_vol)) +
+  geom_boxplot(aes(color = Group)) +
+  geom_jitter(aes(color = Group), position = position_jitter(0)) +
+  scale_color_manual(values=c("orangered3", "orange3")) +
+  theme(legend.position="none") +
+  facet_wrap(~Component, ncol = 5) +
+  labs(y="Relative Volume", x = "") +
+  theme(plot.title = element_text(family="Times New Roman", face="bold", size=20, hjust=0,     color="#555555")) +
+  theme(axis.text.x = element_text(angle=0)) 
+
+print(Relative_GFP_Comparison.box)
+```
+
+```{r, Filtration 2}
+Relative_GFP_Comparison_2 <- Relative_Vol_2 %>%
+    select(Component, rel_vol, Type) %>%
+    filter(Component == "GFP")
+```
+
+```{r, relative GFP Comparison}
+Relative_GFP_Comparison_2$Component <- factor(Relative_GFP_Comparison_2$Component,levels = c("GFP"))
+Relative_GFP_Comparison_2$Group <- factor(Relative_GFP_Comparison_2$Type,levels = c("DAPT", "DMSO"))
+
+Relative_GFP_Comparison_2.box <- ggplot(data=Relative_GFP_Comparison_2, aes(x=Type,y=rel_vol)) +
+  geom_boxplot(aes(color = Group)) +
+  geom_jitter(aes(color = Group), position = position_jitter(0)) +
+  scale_color_manual(values=c("lightseagreen", "palevioletred3")) +
+  theme(legend.position="none") +
+  facet_wrap(~Component, ncol = 5) +
+  labs(y="Relative Volume", x = "") +
+  theme(plot.title = element_text(family="Times New Roman", face="bold", size=20, hjust=0,     color="#555555")) +
+  theme(axis.text.x = element_text(angle=0)) 
+
+print(Relative_GFP_Comparison_2.box)
+```

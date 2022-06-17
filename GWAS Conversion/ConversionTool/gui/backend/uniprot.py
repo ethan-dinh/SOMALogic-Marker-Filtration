@@ -53,27 +53,9 @@ def nameChecker(name):
         else:
             return name + ".csv"
 
-def create_IDList():
-    file_names = []
-    with os.scandir('./Data') as entries:
-        counter = 1
-        for entry in entries:
-            print(f"({counter})", entry.name)
-            file_names.append(entry.name)
-            counter += 1
-        print(f"({counter}) Return home\n")
-        
-    filename = nameChecker(input("Type the filename or select from the options above: "))
-    if isinstance(filename, int):
-        if filename > len(file_names):
-            print()
-            return "Exit"
-        filename = file_names[filename - 1]
-
-    gene_names = import_csv("./Data/" + filename)
-    driver.get("https://legacy.uniprot.org/")
-
-    out_filename = input("Type the filename of the output file: ")
+def create_IDList(fileIn, fileOut): 
+    gene_names = import_csv(fileIn)
+    driver.get("https://www.uniprot.org/")
 
     rows = []
     for i in tqdm(range(len(gene_names))):
@@ -82,34 +64,9 @@ def create_IDList():
         except:
             continue
 
-    print("Conversion Completed!")
+    driver.close()
 
-    with open(out_filename, 'w') as outFile:
+    print("Conversion Completed!")
+    with open(f"{fileOut}", 'w') as outFile:
         write = csv.writer(outFile)
         write.writerows(rows)
-
-    return "Exit"
-
-def user_control():
-    print("Please select from the following: \n (a) Generate UNIPROT ID file from Gene file (.csv) \n (b) A UNIPROT ID file has already been generated \n (c) Exit \n")
-    user_input = input("Selection: ")
-
-    if user_input in ['a', 'A']:
-        if create_IDList() == "Exit":
-            return True
-    elif user_input in ['b', 'B']:
-        pass
-    elif user_input in ['c', 'C']:
-        return False
-    else:
-        print("Invalid option!\n")
-        return True
-        
-# -------------------------------- Main Function --------------------------------
-def main():
-    _continue = True
-    while _continue:
-        _continue = user_control()
-
-if __name__ == "__main__":
-    main()
